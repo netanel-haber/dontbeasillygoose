@@ -5,9 +5,11 @@
   <meta name="viewport" content="width=110, initial-scale=1">
   <title>Don&#39;t be a silly goose</title>
   <script>
+    const requestedView =
+      new URLSearchParams(window.location.search).get("view");
     const fullScene =
-      window.self === window.top ||
-      new URLSearchParams(window.location.search).get("view") === "scene";
+      requestedView === "scene" ||
+      (requestedView !== "tile" && window.self === window.top);
 
     if (fullScene) {
       document.documentElement.classList.add("standalone");
@@ -41,9 +43,7 @@
       background:
         radial-gradient(circle at 78% 22%, rgb(255 126 219 / 18%), transparent 42%),
         linear-gradient(145deg, #16132b 0%, #262335 52%, #1c1538 100%);
-      box-shadow:
-        inset 0 0 22px rgb(255 126 219 / 16%),
-        0 0 14px rgb(54 249 246 / 12%);
+      box-shadow: inset 0 0 22px rgb(255 126 219 / 16%);
     }
 
     .goose-tile img {
@@ -158,7 +158,7 @@
     }
 
 
-    html.standalone .goose-tile::before {
+    .goose-tile::before {
       will-change: transform, opacity;
       backface-visibility: hidden;
       z-index: 0;
@@ -193,12 +193,11 @@
         calc(var(--near-x3, 132px) + 19px) calc(var(--near-y3, 81px) - 8px),
         calc(var(--near-x3, 132px) + 33px) calc(var(--near-y3, 81px) - 4px);
       filter: blur(1.2px) saturate(0.88) brightness(0.9);
-      animation-duration: var(--near-duration, 10s);
-      animation-delay: var(--near-delay, 0s);
+      animation: goose-wisps-near var(--near-duration, 10s) linear var(--near-delay, 0s) infinite;
       opacity: var(--near-opacity, 1);
     }
 
-    html.standalone .goose-tile::after {
+    .goose-tile::after {
       will-change: transform, opacity;
       backface-visibility: hidden;
       z-index: 0;
@@ -233,11 +232,15 @@
         calc(var(--far-x3, 8px) + 12px) calc(var(--far-y3, 96px) - 6px),
         calc(var(--far-x3, 8px) + 21px) calc(var(--far-y3, 96px) - 3px);
       filter: blur(1.3px) saturate(0.86) brightness(0.88);
-      animation-duration: var(--far-duration, 13.5s);
-      animation-delay: var(--far-delay, -0.9s);
+      animation: goose-wisps-far var(--far-duration, 13.5s) linear var(--far-delay, -0.9s) infinite;
       opacity: var(--far-opacity, 1);
     }
 
+
+    html:not(.standalone) .goose-tile::before,
+    html:not(.standalone) .goose-tile::after {
+      z-index: 2;
+    }
 
     @keyframes goose-flight-wide {
       from { transform: translateZ(0) scale(1.6) translateY(-4%); }
@@ -260,7 +263,7 @@
   </style>
 </head>
 <body>
-  <svg width="0" height="0" aria-hidden="true" focusable="false">
+  <svg width="0" height="0" aria-hidden="true" focusable="false" style="position: absolute; overflow: hidden;">
     <filter
       id="ink-only"
       x="0"
@@ -303,10 +306,7 @@
     >
   </div>
   <script>
-    if (
-      document.documentElement.classList.contains("standalone") &&
-      !window.matchMedia("(prefers-reduced-motion: reduce)").matches
-    ) {
+    if (!window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
       const tile = document.querySelector(".goose-tile");
       const random = (min, max) => min + Math.random() * (max - min);
       const set = (name, value) => tile.style.setProperty(name, value);
