@@ -79,6 +79,21 @@ content="A small reminder that friendly replies usually work better than etiquet
       opacity: 0.75;
     }
 
+    .scene-frame {
+      display: block;
+      width: 100vw;
+      height: 24rem;
+      margin-left: calc(50% - 50vw);
+      border: 0;
+    }
+
+
+    @media (max-width: 460px) {
+      .scene-frame {
+        height: 20rem;
+      }
+    }
+
     a {
       color: inherit;
     }
@@ -144,10 +159,11 @@ content="A small reminder that friendly replies usually work better than etiquet
       <a href="https://dontasktoask.com">dontasktoask.com</a>.
     </p>
     <iframe
-      src="/sillygoose.html"
+      class="scene-frame"
+      id="scene"
+      src="/sillygoose.html?view=scene"
       title="Don&#39;t be a silly goose"
-      width="110"
-      height="110"
+      height="384"
       frameborder="0"
       scrolling="no"
       allowtransparency="true"

@@ -5,7 +5,11 @@
   <meta name="viewport" content="width=110, initial-scale=1">
   <title>Don&#39;t be a silly goose</title>
   <script>
-    if (window.self === window.top) {
+    const fullScene =
+      window.self === window.top ||
+      new URLSearchParams(window.location.search).get("view") === "scene";
+
+    if (fullScene) {
       document.documentElement.classList.add("standalone");
       document.querySelector("meta[name=viewport]").content =
         "width=device-width, initial-scale=1";
@@ -60,6 +64,8 @@
       will-change: transform;
     }
 
+
+
     .goose-tile::before,
     .goose-tile::after {
       content: "";
@@ -70,6 +76,8 @@
       pointer-events: none;
       filter: blur(0.8px);
     }
+
+
 
     .goose-tile::before {
       background:
@@ -88,13 +96,13 @@
     }
 
     @keyframes goose-wisps-near {
-      from { transform: translateX(-35%); }
-      to { transform: translateX(100%); }
+      from { transform: translate3d(-35%, 0, 0); }
+      to { transform: translate3d(100%, 0, 0); }
     }
 
     @keyframes goose-wisps-far {
-      from { transform: translateX(-20%); }
-      to { transform: translateX(100%); }
+      from { transform: translate3d(-20%, 0, 0); }
+      to { transform: translate3d(100%, 0, 0); }
     }
 
     @keyframes goose-flight {
@@ -112,9 +120,7 @@
       width: 100%;
       height: 100%;
       overflow: hidden;
-      background:
-        radial-gradient(circle at 65% 30%, rgb(255 126 219 / 18%), transparent 45%),
-        linear-gradient(145deg, #16132b 0%, #262335 52%, #1c1538 100%);
+      background: #262335;
     }
 
     html.standalone body {
@@ -123,31 +129,124 @@
     }
 
     html.standalone .goose-tile {
-      transform: scale(4);
+      position: fixed;
+      left: calc(50% + 10px);
+      top: calc(50% + 10px);
+      overflow: visible;
+      isolation: isolate;
+      border: 0;
+      border-radius: 0;
+      background: #262335;
+      box-shadow: none;
+      transform: translate3d(-50%, -50%, 0) scale(4);
       transform-origin: center;
     }
 
     html.standalone .goose-tile img {
       object-fit: contain;
       object-position: center;
+      left: -0.77%;
+      top: 1.82%;
+      transform-origin: 50.77% 48.18%;
       clip-path: none;
-      transform: scale(1.18) scaleX(-1);
+      border-radius: 0;
+      filter: url("#ink-only");
+      mix-blend-mode: normal;
+      transform: translateZ(0) scale(1.6) translateY(0);
       animation: goose-flight-wide 1400ms cubic-bezier(0.37, 0, 0.63, 1) infinite alternate;
+      animation-delay: var(--flight-delay, 0ms);
     }
 
-    @keyframes goose-flight-wide {
-      from {
-        transform: scale(1.18) translateY(-2%) scaleX(-1);
-      }
 
-      to {
-        transform: scale(1.18) translateY(2%) scaleX(-1);
-      }
+    html.standalone .goose-tile::before {
+      will-change: transform, opacity;
+      backface-visibility: hidden;
+      z-index: 0;
+      background-image:
+        radial-gradient(ellipse, rgb(150 112 255 / 24%) 0 44%, transparent 90%),
+        radial-gradient(circle, rgb(150 112 255 / 48%) 0 38%, transparent 86%),
+        radial-gradient(circle, rgb(150 112 255 / 42%) 0 40%, transparent 88%),
+        radial-gradient(circle, rgb(150 112 255 / 36%) 0 36%, transparent 86%),
+        radial-gradient(ellipse, rgb(150 112 255 / 22%) 0 46%, transparent 92%),
+        radial-gradient(circle, rgb(150 112 255 / 44%) 0 38%, transparent 86%),
+        radial-gradient(circle, rgb(150 112 255 / 38%) 0 40%, transparent 88%),
+        radial-gradient(circle, rgb(150 112 255 / 34%) 0 36%, transparent 86%),
+        radial-gradient(ellipse, rgb(150 112 255 / 25%) 0 44%, transparent 90%),
+        radial-gradient(circle, rgb(150 112 255 / 46%) 0 38%, transparent 86%),
+        radial-gradient(circle, rgb(150 112 255 / 40%) 0 40%, transparent 88%),
+        radial-gradient(circle, rgb(150 112 255 / 35%) 0 36%, transparent 86%);
+      background-size:
+        var(--near-size-1, 48px 11px), var(--near-size-2, 16px 15px), var(--near-size-3, 20px 18px), var(--near-size-4, 15px 14px),
+        var(--near-size-5, 40px 10px), var(--near-size-6, 14px 13px), var(--near-size-7, 18px 16px), var(--near-size-8, 13px 12px),
+        var(--near-size-9, 50px 12px), var(--near-size-10, 18px 16px), var(--near-size-11, 20px 18px), var(--near-size-12, 16px 14px);
+      background-position:
+        var(--near-x1, 14px) var(--near-y1, 16px),
+        calc(var(--near-x1, 14px) + 7px) calc(var(--near-y1, 16px) - 6px),
+        calc(var(--near-x1, 14px) + 17px) calc(var(--near-y1, 16px) - 8px),
+        calc(var(--near-x1, 14px) + 29px) calc(var(--near-y1, 16px) - 4px),
+        var(--near-x2, 94px) var(--near-y2, 49px),
+        calc(var(--near-x2, 94px) + 5px) calc(var(--near-y2, 49px) - 5px),
+        calc(var(--near-x2, 94px) + 14px) calc(var(--near-y2, 49px) - 7px),
+        calc(var(--near-x2, 94px) + 25px) calc(var(--near-y2, 49px) - 3px),
+        var(--near-x3, 132px) var(--near-y3, 81px),
+        calc(var(--near-x3, 132px) + 8px) calc(var(--near-y3, 81px) - 6px),
+        calc(var(--near-x3, 132px) + 19px) calc(var(--near-y3, 81px) - 8px),
+        calc(var(--near-x3, 132px) + 33px) calc(var(--near-y3, 81px) - 4px);
+      filter: blur(1.2px) saturate(0.88) brightness(0.9);
+      animation-duration: var(--near-duration, 10s);
+      animation-delay: var(--near-delay, 0s);
+      opacity: var(--near-opacity, 1);
+    }
+
+    html.standalone .goose-tile::after {
+      will-change: transform, opacity;
+      backface-visibility: hidden;
+      z-index: 0;
+      background-image:
+        radial-gradient(ellipse, rgb(255 126 219 / 18%) 0 44%, transparent 90%),
+        radial-gradient(circle, rgb(255 126 219 / 34%) 0 38%, transparent 86%),
+        radial-gradient(circle, rgb(255 126 219 / 30%) 0 40%, transparent 88%),
+        radial-gradient(circle, rgb(255 126 219 / 27%) 0 36%, transparent 86%),
+        radial-gradient(ellipse, rgb(255 126 219 / 17%) 0 46%, transparent 92%),
+        radial-gradient(circle, rgb(255 126 219 / 32%) 0 38%, transparent 86%),
+        radial-gradient(circle, rgb(255 126 219 / 28%) 0 40%, transparent 88%),
+        radial-gradient(circle, rgb(255 126 219 / 25%) 0 36%, transparent 86%),
+        radial-gradient(ellipse, rgb(255 126 219 / 19%) 0 44%, transparent 90%),
+        radial-gradient(circle, rgb(255 126 219 / 35%) 0 38%, transparent 86%),
+        radial-gradient(circle, rgb(255 126 219 / 29%) 0 40%, transparent 88%),
+        radial-gradient(circle, rgb(255 126 219 / 26%) 0 36%, transparent 86%);
+      background-size:
+        var(--far-size-1, 44px 10px), var(--far-size-2, 15px 14px), var(--far-size-3, 19px 17px), var(--far-size-4, 14px 13px),
+        var(--far-size-5, 54px 12px), var(--far-size-6, 17px 15px), var(--far-size-7, 21px 18px), var(--far-size-8, 15px 14px),
+        var(--far-size-9, 34px 9px), var(--far-size-10, 13px 12px), var(--far-size-11, 16px 14px), var(--far-size-12, 12px 11px);
+      background-position:
+        var(--far-x1, 54px) var(--far-y1, 29px),
+        calc(var(--far-x1, 54px) + 6px) calc(var(--far-y1, 29px) - 5px),
+        calc(var(--far-x1, 54px) + 16px) calc(var(--far-y1, 29px) - 7px),
+        calc(var(--far-x1, 54px) + 28px) calc(var(--far-y1, 29px) - 3px),
+        var(--far-x2, 118px) var(--far-y2, 65px),
+        calc(var(--far-x2, 118px) + 7px) calc(var(--far-y2, 65px) - 5px),
+        calc(var(--far-x2, 118px) + 18px) calc(var(--far-y2, 65px) - 7px),
+        calc(var(--far-x2, 118px) + 31px) calc(var(--far-y2, 65px) - 3px),
+        var(--far-x3, 8px) var(--far-y3, 96px),
+        calc(var(--far-x3, 8px) + 4px) calc(var(--far-y3, 96px) - 4px),
+        calc(var(--far-x3, 8px) + 12px) calc(var(--far-y3, 96px) - 6px),
+        calc(var(--far-x3, 8px) + 21px) calc(var(--far-y3, 96px) - 3px);
+      filter: blur(1.3px) saturate(0.86) brightness(0.88);
+      animation-duration: var(--far-duration, 13.5s);
+      animation-delay: var(--far-delay, -0.9s);
+      opacity: var(--far-opacity, 1);
+    }
+
+
+    @keyframes goose-flight-wide {
+      from { transform: translateZ(0) scale(1.6) translateY(-4%); }
+      to { transform: translateZ(0) scale(1.6) translateY(4%); }
     }
 
     @media (max-width: 460px), (max-height: 460px) {
       html.standalone .goose-tile {
-        transform: scale(3);
+        transform: translate3d(-50%, -50%, 0) scale(3);
       }
     }
 
@@ -161,11 +260,169 @@
   </style>
 </head>
 <body>
+  <svg width="0" height="0" aria-hidden="true" focusable="false">
+    <filter
+      id="ink-only"
+      x="0"
+      y="0"
+      width="100%"
+      height="100%"
+      color-interpolation-filters="sRGB"
+    >
+      <feColorMatrix
+        in="SourceGraphic"
+        type="matrix"
+        values="
+          0 0 0 0 0
+          0 0 0 0 0
+          0 0 0 0 0
+          -0.2126 -0.7152 -0.0722 0 1
+        "
+        result="darkness"
+      />
+      <feComposite
+        in="darkness"
+        in2="SourceGraphic"
+        operator="in"
+        result="source-darkness"
+      />
+      <feComponentTransfer in="source-darkness" result="ink-alpha">
+        <feFuncA
+          type="table"
+          tableValues="0 0 0 0.75 1 1 1 1"
+        />
+      </feComponentTransfer>
+      <feFlood flood-color="#ff7edb" result="ink-color" />
+      <feComposite in="ink-color" in2="ink-alpha" operator="in" />
+    </filter>
+  </svg>
   <div class="goose-tile" role="img" aria-label="Don&#39;t be a silly goose">
     <img
       src="https://images.pdimagearchive.org/collections/edward-lear-s-walk-on-a-windy-day-1860/11338798843_15b3be3f31_b.jpg"
       alt=""
     >
   </div>
+  <script>
+    if (
+      document.documentElement.classList.contains("standalone") &&
+      !window.matchMedia("(prefers-reduced-motion: reduce)").matches
+    ) {
+      const tile = document.querySelector(".goose-tile");
+      const random = (min, max) => min + Math.random() * (max - min);
+      const set = (name, value) => tile.style.setProperty(name, value);
+
+      const flightKey = "sillygoose-flight-origin";
+      const flightCycle = 2800;
+      let flightOrigin = Date.now();
+
+      try {
+        const savedOrigin = Number(window.localStorage.getItem(flightKey));
+        if (Number.isFinite(savedOrigin) && savedOrigin > 0) {
+          flightOrigin = savedOrigin;
+        } else {
+          window.localStorage.setItem(flightKey, String(flightOrigin));
+        }
+      } catch {
+        // Storage can be unavailable in private or restricted contexts.
+      }
+
+      const flightPhase = (Date.now() - flightOrigin) % flightCycle;
+      set("--flight-delay", "-" + flightPhase + "ms");
+
+      const randomizeShape = (kind) => {
+        const baseWidth = kind === "near" ? [34, 50] : [30, 50];
+        const baseHeight = kind === "near" ? [8, 13] : [7, 12];
+        const puffWidth = kind === "near" ? [11, 20] : [10, 18];
+        const puffHeight = kind === "near" ? [10, 18] : [9, 17];
+
+        for (let index = 1; index <= 12; index += 1) {
+          const isBase = (index - 1) % 4 === 0;
+          const widthRange = isBase ? baseWidth : puffWidth;
+          const heightRange = isBase ? baseHeight : puffHeight;
+          const width = random(widthRange[0], widthRange[1]).toFixed(1);
+          const height = random(heightRange[0], heightRange[1]).toFixed(1);
+          set(
+            "--" + kind + "-size-" + index,
+            width + "px " + height + "px"
+          );
+        }
+      };
+
+      const reseed = (kind) => {
+        randomizeShape(kind);
+        if (kind === "near") {
+          set("--near-x1", random(5, 28).toFixed(1) + "px");
+          set("--near-y1", random(12, 30).toFixed(1) + "px");
+          set("--near-x2", random(58, 105).toFixed(1) + "px");
+          set("--near-y2", random(38, 64).toFixed(1) + "px");
+          set("--near-x3", random(98, 132).toFixed(1) + "px");
+          set("--near-y3", random(70, 86).toFixed(1) + "px");
+          set("--near-duration", random(8, 12).toFixed(2) + "s");
+          set("--near-delay", -random(0, 2.5).toFixed(2) + "s");
+        } else {
+          set("--far-x1", random(22, 78).toFixed(1) + "px");
+          set("--far-y1", random(12, 40).toFixed(1) + "px");
+          set("--far-x2", random(80, 130).toFixed(1) + "px");
+          set("--far-y2", random(46, 78).toFixed(1) + "px");
+          set("--far-x3", random(8, 40).toFixed(1) + "px");
+          set("--far-y3", random(78, 90).toFixed(1) + "px");
+          set("--far-duration", random(11, 16).toFixed(2) + "s");
+          set("--far-delay", -random(0, 3.5).toFixed(2) + "s");
+        }
+      };
+
+      const wispOpacity = { near: 0, far: 0 };
+      set("--near-opacity", "0");
+      set("--far-opacity", "0");
+
+      const fadeWisp = (kind, target, duration, done) => {
+        const opacityName = "--" + kind + "-opacity";
+        const initial = wispOpacity[kind];
+        const startedAt = window.performance.now();
+
+        const frame = (now) => {
+          const progress = Math.min((now - startedAt) / duration, 1);
+          const eased = progress * progress * (3 - 2 * progress);
+          const opacity = initial + (target - initial) * eased;
+          wispOpacity[kind] = opacity;
+          set(opacityName, opacity.toFixed(3));
+
+          if (progress < 1) {
+            window.requestAnimationFrame(frame);
+          } else if (done) {
+            done();
+          }
+        };
+
+        window.requestAnimationFrame(frame);
+      };
+
+      const cycle = (kind, firstRun) => {
+        const beginAppearance = () => {
+          window.setTimeout(() => {
+            reseed(kind);
+            const target = random(0.38, 0.68);
+            const fadeIn = kind === "near" ? 6000 : 7500;
+            fadeWisp(kind, target, fadeIn, () => {
+              window.setTimeout(
+                () => cycle(kind, false),
+                random(15000, 25000)
+              );
+            });
+          }, firstRun ? random(0, 900) : random(1200, 3000));
+        };
+
+        if (firstRun) {
+          beginAppearance();
+        } else {
+          const fadeOut = kind === "near" ? 3000 : 3500;
+          fadeWisp(kind, 0, fadeOut, beginAppearance);
+        }
+      };
+
+      cycle("near", true);
+      cycle("far", true);
+    }
+  </script>
 </body>
 </html>
